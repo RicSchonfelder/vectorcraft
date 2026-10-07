@@ -4,7 +4,7 @@ VectorCraft is a clean-room, open-source, pure-Rust reimplementation of the Adob
 
 This file tracks **how far we are and what's left**. Time estimates are wall-clock hours of continuous Claude Opus 5.5 agent work (including builds and the CI gate), given both for **one agent** and for **4–6 parallel agents** on disjoint crates. They are counted from the remaining work (see [Parity estimate](#parity-estimate)), calibrated against measured throughput, and updated as work lands.
 
-_Last updated: 2026-10-08 (after M4.14–M4.98, M8.1–M8.20, M14.4–M14.7, the MCP prompts, resource templates, completions and logging, the 2026-10-07 issue fixes, the Layers panel rework, the Pen and shape-tool modifier fixes and the Layers, Artboards, Swatches/Brushes and dialog fixes; see [Honest assessment](#honest-assessment-2026-10-05))._
+_Last updated: 2026-10-08 (after M4.14–M4.98, M8.1–M8.20, M14.4–M14.7, the MCP prompts, resource templates, completions and logging, the 2026-10-07 issue fixes, the Layers panel rework, the Pen and shape-tool modifier fixes, the Layers, Artboards, Swatches/Brushes and dialog fixes and opening files from the macOS Finder (#295, #354); see [Honest assessment](#honest-assessment-2026-10-05))._
 
 ## Where we are
 
@@ -42,7 +42,7 @@ since 2026-10-01.
 | **Bundled content:** brush, symbol, style and swatch libraries | ~30% | Ours are original and generated in code, and far fewer than Illustrator ships; brush and symbol libraries are still missing |
 | **Performance** | unverified | Multithreaded, off-thread rendering and caches are in place. The last budget run (2026-10-01, loaded machine) measured 290 ms for a 50k-path fit against a 16 ms budget. Re-run `vectorcraft-cli perf` on an idle machine |
 | **Robustness** | good, new | ~2,840 tests, property tests, no panics in shipped code (lints, the `guard` safety net, import fuzzing), Data Recovery. Missing: a corpus of real-world files, Windows/Linux/browser QA |
-| **Platforms and 1.0 polish** | ~60% | The macOS app and the web build work; hybrid-graphics laptops render on the power-saving GPU by default (#306); Windows/Linux packaging and accessibility are pending |
+| **Platforms and 1.0 polish** | ~60% | The macOS app and the web build work, and Finder opens every readable format with the macOS app (#295, #354); hybrid-graphics laptops render on the power-saving GPU by default (#306); Windows/Linux packaging and accessibility are pending |
 | **Agent automation** | beyond Illustrator | Every command, gesture and dialog is drivable over MCP, the CLI and the control channel |
 
 ### Where we're lacking (in priority order)
@@ -98,6 +98,7 @@ grade by behaviour against `plan/illustrator/`, not by whether a menu item exist
   - The dock's double arrow collapses Properties, Layers and Libraries to icons at the top of the icon column, popping out like the other icon panels, and expands them again (`window.collapseDock`, kept with the preferences and in saved workspaces). The icon column's own arrow (expanding the icon panels into a full column) is not done.
   - Localised UI: menus (in-window and native), panels, dialogs, toolbar and Preferences read from per-language catalogs (`crates/ui-egui/src/i18n`, see `docs/development.md`); Traditional Chinese (Taiwan) ships complete, and Czech and Japanese cover every menu label, with system-locale detection on macOS, Windows and Linux, a VectorCraft ▸ Language menu and a Language preference. Names are never translated (fonts and their styles, layers, artboards, saved presets, user libraries, custom workspaces, recent files, plug-ins).
   - Native macOS menu bar, vector tool cursors, a ⌘K command palette, middle-button panning with any tool.
+  - macOS: Finder opens every format File › Open reads with VectorCraft (double-click, Open With, a drop on the Dock icon, `open -a`), at launch or while it runs; the release and `cargo xtask bundle` apps share one `Info.plist` that declares those document types, owning only VectorCraft's own formats.
   - A canvas context menu: right-click selects the object under the pointer and lists what applies to the selection (Undo/Redo, clipboard, group, isolation, join, Remove Anchor Points when anchors are selected, masks, compound paths, guides, Transform, Arrange, Select, Export Selection), or the view commands on empty canvas.
   - Save / Don't Save / Cancel before closing or quitting with unsaved documents (tabs, Close, Close All, Quit, window close).
   - Four brightness themes, persistent preferences.
